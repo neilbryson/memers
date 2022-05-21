@@ -15,5 +15,8 @@ memers drake --top-text Hello --bottom-text World drake.jpg
 ```
 ![](docs_assets/drake.jpg)
 
+## Fonts
+Using [Bebas Neue](https://github.com/dharmatype/Bebas-Neue).
+
 ## License
 MIT
