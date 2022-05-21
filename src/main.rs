@@ -1,9 +1,12 @@
 mod commands;
+mod image;
 
-use crate::commands::{Cli, Commands};
+use crate::commands::{run_command, Cli};
 use clap::Parser;
 
 fn main() {
     let args: Cli = Cli::parse();
-    Commands::run(args.command);
+    run_command(args.command).unwrap_or_else(|err| {
+        println!("Error: {}", err.to_string());
+    });
 }

@@ -1,4 +1,8 @@
+use crate::image::{create_text_img, load_image, paste_image};
+use anyhow::Result;
 use clap::{Parser, Subcommand};
+use image::RgbaImage;
+use std::fs;
 
 /// Meme generator
 #[derive(Parser, Debug)]
@@ -17,24 +21,38 @@ pub enum CommandTypes {
         top_text: String,
         #[clap(short, long)]
         bottom_text: String,
-        /// This puts Drake on the right-hand side
-        #[clap(short, long)]
-        inverted: Option<bool>,
+        /// Where to save the image
+        output_path: String,
     },
 }
 
-pub struct Commands;
+pub fn run_command(command: CommandTypes) -> Result<()> {
+    match command {
+        CommandTypes::Drake {
+            top_text,
+            bottom_text,
+            output_path,
+        } => {
+            println!("Generating Drake meme...");
 
-impl Commands {
-    pub fn run(command: CommandTypes) {
-        match command {
-            CommandTypes::Drake {
-                top_text,
-                bottom_text,
-                inverted,
-            } => {
-                todo!();
-            }
+            let mut output_img = RgbaImage::new(800, 800);
+            let drake_no_img = load_image("src/img/drake-no.jpg", 400)?;
+            let drake_yes_img = load_image("src/img/drake-yes.jpeg", 400)?;
+
+            paste_image(&mut output_img, &drake_no_img, (0, 0));
+            paste_image(&mut output_img, &drake_yes_img, (0, 400));
+
+            let top_text_img = create_text_img(400, 64.0, top_text.as_str())?;
+            let bottom_text_img = create_text_img(400, 64.0, bottom_text.as_str())?;
+
+            paste_image(&mut output_img, &top_text_img, (400, 0));
+            paste_image(&mut output_img, &bottom_text_img, (400, 400));
+
+            output_img.save(&output_path)?;
+            let canonical_path = fs::canonicalize(&output_path)?;
+            println!("Image created at {}", &canonical_path.to_str().unwrap());
+
+            Ok(())
         }
     }
 }
