@@ -1,6 +1,10 @@
+use crate::utils::load_font;
 use anyhow::Result;
 use image::imageops::FilterType;
-use image::{io::Reader as ImageReader, DynamicImage, GenericImage, ImageBuffer, Rgba, RgbaImage};
+use image::{
+    imageops, io::Reader as ImageReader, DynamicImage, Frame, GenericImage, ImageBuffer, Rgba,
+    RgbaImage,
+};
 use imageproc::drawing::draw_text_mut;
 use rusttype::{Font, Scale};
 
@@ -25,8 +29,7 @@ where
 pub fn create_text_img(size: u32, font_size: f32, text: &str) -> Result<RgbaImage> {
     let mut img: RgbaImage =
         ImageBuffer::from_fn(size, size, |_, _| Rgba([255u8, 255u8, 255u8, 255u8]));
-    let font_vec = Vec::from(include_bytes!("fonts/BebasNeue-Regular.ttf") as &[u8]);
-    let font = Font::try_from_vec(font_vec).unwrap();
+    let font = load_font().unwrap();
     let scale = Scale {
         x: font_size,
         y: font_size,
@@ -42,4 +45,31 @@ pub fn create_text_img(size: u32, font_size: f32, text: &str) -> Result<RgbaImag
     );
 
     Ok(img)
+}
+
+pub fn insert_text_frame(
+    dest_vec: &mut Vec<Frame>,
+    frame_buf: &RgbaImage,
+    font: &Font,
+    font_size: f32,
+    width: u32,
+    height: u32,
+    text: &str,
+) {
+    let scale = Scale {
+        x: font_size,
+        y: font_size,
+    };
+    let mut res = imageops::resize(&*frame_buf, width, height, FilterType::Nearest);
+    draw_text_mut(
+        &mut res,
+        Rgba([0xFF, 0xFF, 0xFF, 0xFF]),
+        0,
+        0,
+        scale,
+        &font,
+        text,
+    );
+    let frm = Frame::new(res);
+    dest_vec.push(frm);
 }

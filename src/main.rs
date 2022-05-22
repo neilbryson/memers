@@ -1,5 +1,6 @@
 mod commands;
 mod image;
+mod utils;
 
 use crate::commands::{run_command, Cli};
 use clap::Parser;
