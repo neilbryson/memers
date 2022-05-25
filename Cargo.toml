@@ -3,7 +3,7 @@ name = "memers"
 description = "Meme generator"
 authors = ["Neil Bryson Cargamento <neilbrysonmc@gmail.com>"]
 license = "MIT"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -13,6 +13,7 @@ anyhow = "1.0.57"
 clap = { version = "3.1", features = ["derive"] }
 image = "0.24"
 imageproc = "0.23"
+rust-embed = "6.4"
 rusttype = "0.9"
 
 [profile.release]

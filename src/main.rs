@@ -1,3 +1,4 @@
+mod assets;
 mod commands;
 mod image_process;
 mod memes;
