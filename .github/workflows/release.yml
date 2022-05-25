@@ -48,11 +48,12 @@ jobs:
           name: release-binary-Linux
           path: linux
       - name: Download macOS artifact
+        uses: actions/download-artifact@v3
         with:
           name: release-binary-macOS
           path: macos
-        uses: actions/download-artifact@v3
       - name: Download Windows artifact
+        uses: actions/download-artifact@v3
         with:
           name: release-binary-Windows
           path: windows
