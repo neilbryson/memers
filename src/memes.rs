@@ -1,4 +1,4 @@
-use crate::image::{create_text_img, insert_text_frame, load_image, paste_image};
+use crate::image_process::{create_text_img, insert_text_frame, load_image, paste_image};
 use crate::utils::{load_font, print_output_path};
 use anyhow::Result;
 use image::{codecs::gif, AnimationDecoder, Frame, RgbaImage};
