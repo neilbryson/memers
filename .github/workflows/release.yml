@@ -40,7 +40,7 @@ jobs:
           path: target/release/memers*
   send-to-release:
     needs: [build]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifact
         uses: actions/download-artifact@v3
