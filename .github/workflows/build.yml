@@ -11,10 +11,7 @@ jobs:
     defaults:
       run:
         working-directory: memers
-    strategy:
-      matrix:
-        os: [ubuntu-20.04, macos-11, windows-2022]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
