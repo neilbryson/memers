@@ -1,16 +1,15 @@
-use crate::image_process::{create_text_img, insert_text_frame, load_image, paste_image};
+use crate::image_process::{create_text_img, load_image, paste_image, process_gif};
 use crate::utils::{load_font, print_output_path};
 use anyhow::Result;
-use image::{codecs::gif, AnimationDecoder, Frame, RgbaImage};
-use rusttype::Font;
+use image::{codecs::gif, RgbaImage};
 use std::fs;
 
 pub fn generate_drake(top_text: String, bottom_text: String, output_path: String) -> Result<()> {
     println!("Generating Drake meme...");
 
     let mut output_img = RgbaImage::new(800, 800);
-    let drake_no_img = load_image("src/img/drake-no.jpg", 400)?;
-    let drake_yes_img = load_image("src/img/drake-yes.jpeg", 400)?;
+    let drake_no_img = load_image("img/drake-no.jpg", 400)?;
+    let drake_yes_img = load_image("img/drake-yes.jpeg", 400)?;
 
     paste_image(&mut output_img, &drake_no_img, (0, 0));
     paste_image(&mut output_img, &drake_yes_img, (0, 400));
@@ -76,27 +75,4 @@ pub fn generate_gigachad(text: String, output_path: String) -> Result<()> {
     print_output_path(&output_path)?;
 
     Ok(())
-}
-
-fn process_gif(path: &str, text_to_insert: &str, font: &Font) -> Result<Vec<Frame>> {
-    let gif_file = fs::File::open(path)?;
-    let decoded = gif::GifDecoder::new(gif_file)?.into_frames();
-    let raw_frames = decoded.collect_frames().expect("error decoding gif");
-
-    let mut processed_frames: Vec<Frame> = Vec::new();
-
-    for frame in &raw_frames {
-        let frm_buf = frame.buffer();
-        insert_text_frame(
-            &mut processed_frames,
-            &frm_buf,
-            &font,
-            64.0,
-            360,
-            640,
-            text_to_insert,
-        );
-    }
-
-    Ok(processed_frames)
 }

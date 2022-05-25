@@ -1,15 +1,20 @@
+use crate::assets;
 use crate::utils::load_font;
 use anyhow::Result;
 use image::imageops::FilterType;
 use image::{
-    imageops, io::Reader as ImageReader, DynamicImage, Frame, GenericImage, ImageBuffer, Rgba,
-    RgbaImage,
+    codecs::gif, imageops, io::Reader as ImageReader, AnimationDecoder, DynamicImage, Frame,
+    GenericImage, ImageBuffer, Rgba, RgbaImage,
 };
 use imageproc::drawing::draw_text_mut;
 use rusttype::{Font, Scale};
+use std::fs::File;
+use std::io::Cursor;
 
-pub fn load_image(path: &str, to_size: u32) -> Result<DynamicImage> {
-    let img = ImageReader::open(path)?
+pub fn load_image(asset_name: &str, to_size: u32) -> Result<DynamicImage> {
+    let img_asset = assets::Images::get(asset_name).unwrap();
+    let img = ImageReader::new(Cursor::new(img_asset.data))
+        .with_guessed_format()?
         .decode()?
         .resize(to_size, to_size, FilterType::Nearest);
     Ok(img)
@@ -72,4 +77,27 @@ pub fn insert_text_frame(
     );
     let frm = Frame::new(res);
     dest_vec.push(frm);
+}
+
+pub fn process_gif(path: &str, text_to_insert: &str, font: &Font) -> Result<Vec<Frame>> {
+    let gif_file = File::open(path)?;
+    let decoded = gif::GifDecoder::new(gif_file)?.into_frames();
+    let raw_frames = decoded.collect_frames().expect("error decoding gif");
+
+    let mut processed_frames: Vec<Frame> = Vec::new();
+
+    for frame in &raw_frames {
+        let frm_buf = frame.buffer();
+        insert_text_frame(
+            &mut processed_frames,
+            &frm_buf,
+            &font,
+            64.0,
+            360,
+            640,
+            text_to_insert,
+        );
+    }
+
+    Ok(processed_frames)
 }
