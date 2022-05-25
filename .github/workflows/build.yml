@@ -35,3 +35,7 @@ jobs:
         with:
           command: build
           args: --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-binary-${{ runner.os }}
+          path: target/release/memers*
