@@ -3,12 +3,11 @@ use crate::utils::load_font;
 use anyhow::Result;
 use image::imageops::FilterType;
 use image::{
-    codecs::gif, imageops, io::Reader as ImageReader, AnimationDecoder, DynamicImage, Frame,
-    GenericImage, ImageBuffer, Rgba, RgbaImage,
+    codecs::gif::GifDecoder, imageops, io::Reader as ImageReader, AnimationDecoder, DynamicImage,
+    Frame, GenericImage, ImageBuffer, Rgba, RgbaImage,
 };
 use imageproc::drawing::draw_text_mut;
 use rusttype::{Font, Scale};
-use std::fs::File;
 use std::io::Cursor;
 
 pub fn load_image(asset_name: &str, to_size: u32) -> Result<DynamicImage> {
@@ -79,9 +78,9 @@ pub fn insert_text_frame(
     dest_vec.push(frm);
 }
 
-pub fn process_gif(path: &str, text_to_insert: &str, font: &Font) -> Result<Vec<Frame>> {
-    let gif_file = File::open(path)?;
-    let decoded = gif::GifDecoder::new(gif_file)?.into_frames();
+pub fn process_gif(asset_name: &str, text_to_insert: &str, font: &Font) -> Result<Vec<Frame>> {
+    let gif_file = assets::Images::get(asset_name).unwrap();
+    let decoded = GifDecoder::new(Cursor::new(gif_file.data))?.into_frames();
     let raw_frames = decoded.collect_frames().expect("error decoding gif");
 
     let mut processed_frames: Vec<Frame> = Vec::new();

@@ -37,10 +37,10 @@ pub fn generate_fan_vs_enjoyer(
     let font = load_font().unwrap();
 
     println!("Decoding Average Fan gif");
-    let average_fan_frames = process_gif("src/img/average-fan.gif", fan_text.as_str(), &font)?;
+    let average_fan_frames = process_gif("img/average-fan.gif", fan_text.as_str(), &font)?;
 
     println!("Decoding GigaChad gif");
-    let gigachad_frames = process_gif("src/img/gigachad.gif", enjoyer_text.as_str(), &font)?;
+    let gigachad_frames = process_gif("img/gigachad.gif", enjoyer_text.as_str(), &font)?;
 
     println!("Creating file...\nThis might take a long time.");
     let output_file = fs::File::create(&output_path)?;
@@ -64,7 +64,7 @@ pub fn generate_gigachad(text: String, output_path: String) -> Result<()> {
     let font = load_font().unwrap();
 
     println!("Decoding GigaChad gif");
-    let gigachad_frames = process_gif("src/img/gigachad.gif", text.as_str(), &font)?;
+    let gigachad_frames = process_gif("img/gigachad.gif", text.as_str(), &font)?;
 
     println!("Creating file");
     let output_file = fs::File::create(&output_path)?;
