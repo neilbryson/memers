@@ -13,7 +13,7 @@ jobs:
         working-directory: memers
     strategy:
       matrix:
-        os: [ubuntu-20.04, macos-11, windows-2022]
+        os: [ubuntu-22.04, macos-11, windows-2022]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -35,7 +35,3 @@ jobs:
         with:
           command: build
           args: --release
-      - uses: actions/upload-artifact@v3
-        with:
-          name: release-binary-${{ runner.os }}
-          path: target/release/memers*

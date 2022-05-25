@@ -1,0 +1,69 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    defaults:
+      run:
+        working-directory: memers
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-11, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-cargo
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: release-binary-${{ runner.os }}
+          path: target/release/memers*
+  send-to-release:
+    needs: [build]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Download Linux artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: release-binary-Linux
+          path: linux
+      - name: Download macOS artifact
+        with:
+          name: release-binary-macOS
+          path: macos
+        uses: actions/download-artifact@v3
+      - name: Download Windows artifact
+        with:
+          name: release-binary-Windows
+          path: windows
+      - name: Prepare files
+        run: |
+          mv linux/memers memers-linux
+          mv macos/memers memers-macos
+          mv windows/memers.exe memers.exe
+      - uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            memers-linux
+            memers-macos
+            memers.exe
